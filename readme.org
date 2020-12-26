@@ -1,0 +1,74 @@
+# -*- coding: utf-8; org-download-method: directory; org-download-image-dir: "./image"; -*-
+#+TITLE: simplify-keybinding
+#+AUTHOR: Jian Wang
+#+DATE: 2020-12-26
+
+* About
+This library is to simplify the Emacs keybinding for the commands which have same prefix leading
+key, so that we don't need to press the prefix leading key.
+
+Such as, ~winner-undo~ ("C-c <left>") and ~winner-redo~ ("C-c <right>"), if last command is one of
+them, next it doesn't need to press "C-c" again.
+
+#+DOWNLOADED: screenshot @ 2020-12-26 12:42:50
+[[file:image/About/2020-12-26_12-42-50_screenshot.png]]
+
+It is possible to use ~Hydra~ to implement similar functions, but I think the way used here is more simple and clear.
+
+* Installation
+Clone this git repo to "${user-emacs-directory}/packages/simplify-keybinding", and add folowing
+lines to Emacs config file:
+#+begin_src emacs-lisp
+  (use-package simplify-keybinding
+    :defer t
+    :ensure nil ; it is github package
+    ;; If the path is relative, it is expanded within `user-emacs-directory'
+    :load-path "packages/simplify-keybinding"
+    :init
+    (load "hide-region-autoloads.el")
+    )
+#+end_src
+
+* Usage
+Just use ~SK-define-keymap~ to define the simplified keybindings, please see the examples below.
+
+~SK-setup-default-keymap~ can setup these example keybindings automatically.
+
+** For winner
+#+begin_src emacs-lisp
+  (SK-define-keymap
+   (("<left>" winner-undo "← undo")
+    ("<right>" winner-redo "→ redo"))
+   "Winner: ")
+#+end_src
+
+** For "prev-buffer" and "next-buffer"
+#+begin_src emacs-lisp
+  (SK-define-keymap
+   (("<left>" previous-buffer "← prev-buffer")
+    ("<right>" next-buffer "→ next-buffer"))
+   "Buffer: ")
+#+end_src
+
+** For navigating on compile errors
+#+begin_src emacs-lisp
+  (with-eval-after-load 'compile
+    (SK-define-keymap
+     (("M-n" next-error "M-n next-error")
+      ("M-p" previous-error "M-p prev-error"))
+     "Compilation error: ")
+    )
+#+end_src
+
+** For navigating on org-mode headlines
+#+begin_src emacs-lisp
+  (SK-define-keymap
+   (("C-n" org-next-visible-heading "C-n next")
+    ("C-p" org-previous-visible-heading "C-p pre")
+    ("C-u" outline-up-heading "C-u up")
+    ("C-f" org-forward-heading-same-level "C-f foward")
+    ("C-b" org-backward-heading-same-level "C-b backward")
+    )
+   "Navigate headlines: "
+   (derived-mode-p 'org-mode))
+#+end_src
