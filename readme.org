@@ -7,8 +7,8 @@
 This library is to simplify the Emacs keybinding for the commands which have same prefix leading
 key, so that we don't need to press the prefix leading key.
 
-Such as, ~winner-undo~ ("C-c <left>") and ~winner-redo~ ("C-c <right>"), if last command is one of
-them, next it doesn't need to press "C-c" again.
+Such as, By defining simplied keybindings for ~winner-undo~ ("C-c <left>") and ~winner-redo~ ("C-c
+<right>"), if last command is one of them, it doesn't need to press "C-c" again to next command.
 
 #+DOWNLOADED: screenshot @ 2020-12-26 12:42:50
 [[file:image/About/2020-12-26_12-42-50_screenshot.png]]
