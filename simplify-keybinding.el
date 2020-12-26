@@ -1,3 +1,4 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
 ;;; simplify-keybinding.el --- simplify keybinding for some long keybindings
 
 ;; Author: Jian Wang <leuven65@gmail.com>
@@ -28,13 +29,15 @@
 ;;;###autoload
 (cl-defmacro SK-define-keymap (key-bindings
                                &optional
-                               key-message
+                               prefix-message
                                (predicate t))
   "Define transient keymap for the `key-binding'"
-  `(let ((keymap (make-sparse-keymap)))
+  `(let ((keymap (make-sparse-keymap))
+         (help-msg ,(concat prefix-message
+                            (string-join (seq-map (lambda (_) (seq-elt _ 2)) key-bindings) ";"))))
      ,@(seq-map (lambda (kbs)
-                  (let* ((key (car kbs))
-                         (fun (cdr kbs))
+                  (let* ((key (seq-elt kbs 0))
+                         (fun (seq-elt kbs 1))
                          (adv-fun (intern (format "%s@my-transient"
                                                   (symbol-name fun)))))
                     `(progn
@@ -45,7 +48,7 @@
                        ;; create advice
                        (define-advice ,fun (:after (&rest args) my-transient)
                          (when ,predicate
-                           (let ((msg ,key-message))
+                           (let ((msg help-msg))
                              (when msg
                                (message msg)))
                            (set-transient-map keymap)))))
@@ -67,31 +70,31 @@
 
   (interactive)
   (SK-define-keymap
-   (("<left>" . winner-undo)
-    ( "<right>" . winner-redo))
-   "Winner: ← undo; → redo")
+   (("<left>" winner-undo "← undo")
+    ( "<right>" winner-redo "→ redo"))
+   "Winner: ")
 
   (SK-define-keymap
-   (("<left>" . previous-buffer)
-    ("<right>" . next-buffer))
-   "Buffer: ← prev-buffer; → next-buffer")
+   (("<left>" previous-buffer "← prev-buffer")
+    ("<right>" next-buffer "→ next-buffer"))
+   "Buffer: ")
 
   (with-eval-after-load 'compile
     (SK-define-keymap
-     (("M-n" . next-error)
-      ("M-p" . previous-error))
-     "Compilation error: M-n next-error; M-p prev-error")
+     (("M-n" next-error "M-n next-error")
+      ("M-p" previous-error "M-p prev-error"))
+     "Compilation error: ")
     )
 
   (with-eval-after-load 'org
     (SK-define-keymap
-     (("C-n" . org-next-visible-heading)
-      ("C-p" . org-previous-visible-heading)
-      ("C-u" . outline-up-heading)
-      ("C-f" . org-forward-heading-same-level)
-      ("C-b" . org-backward-heading-same-level)
+     (("C-n" org-next-visible-heading "C-n next")
+      ("C-p" org-previous-visible-heading "C-p pre")
+      ("C-u" outline-up-heading "C-u up")
+      ("C-f" org-forward-heading-same-level "C-f foward")
+      ("C-b" org-backward-heading-same-level "C-b backward")
       )
-     "Org mode: C-n next; C-p pre; C-u up; C-f foward; C-b backward"
+     "Navigate headlines: "
      (derived-mode-p 'org-mode))
     )
   )
