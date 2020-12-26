@@ -24,8 +24,8 @@ lines to Emacs config file:
     :ensure nil ; it is github package
     ;; If the path is relative, it is expanded within `user-emacs-directory'
     :load-path "packages/simplify-keybinding"
-    :init
-    (load "hide-region-autoloads.el")
+    ;; :init
+    ;; (load "simplify-keybinding-autoloads.el")
     )
 #+end_src
 
