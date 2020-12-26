@@ -24,8 +24,13 @@ lines to Emacs config file:
     :ensure nil ; it is github package
     ;; If the path is relative, it is expanded within `user-emacs-directory'
     :load-path "packages/simplify-keybinding"
-    ;; :init
-    ;; (load "simplify-keybinding-autoloads.el")
+    :init
+    (let ((pkg-name "simplify-keybinding"))
+      (ignore-errors
+        (package-generate-autoloads pkg-name
+                                    (expand-file-name (concat "packages/" pkg-name)
+                                                      user-emacs-directory)))
+      (load (concat pkg-name "-autoloads.el")))
     )
 #+end_src
 
