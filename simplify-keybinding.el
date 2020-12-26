@@ -31,7 +31,21 @@
                                &optional
                                prefix-message
                                (predicate t))
-  "Define transient keymap for the `key-binding'"
+  "Define transient keymap for the `key-binding'.
+
+`key-bindings':
+  list of keybinding definitions, such as,
+  ((\"<left>\" winner-undo \"← undo\")
+    ( \"<right>\" winner-redo \"→ redo\"))
+`prefix-message':
+  The message will be showed in the minibuffer
+`predicate':
+  Predicate when to enable the keybindings, such as,
+  (SK-define-keymap
+     ((\"C-n\" org-next-visible-heading \"C-n next\"))
+     \"Navigate headlines: \"
+     (derived-mode-p 'org-mode))
+"
   `(let ((keymap (make-sparse-keymap))
          (help-msg ,(concat prefix-message
                             (string-join (seq-map (lambda (_) (seq-elt _ 2)) key-bindings) ";"))))
@@ -71,7 +85,7 @@
   (interactive)
   (SK-define-keymap
    (("<left>" winner-undo "← undo")
-    ( "<right>" winner-redo "→ redo"))
+    ("<right>" winner-redo "→ redo"))
    "Winner: ")
 
   (SK-define-keymap
